@@ -288,16 +288,26 @@ void cheat_manager::teleport(TslEntity entity) {
 			item_previous = ChooseObject;
 			once = true;
 			ActorObject = static_cast<AActor*>(entity.ActorObject); //rechange offset 0x08? props or 0x19B 
+			PawnActor = static_cast<APawn*>(entity.PawnActor);  //rechange offset 0x08? props or 0x19B 
 		}
 	}
 
 	else if (once && ChooseObject == item_previous) once = false;
 
 	ImGui::Begin("Teleport objects", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse);
-	ImGui::SetCursorPosY(660);
-	if (ImGui::Button("Teleport to me", ImVec2(400, 40)) && !once) {
-		ActorObject->K2_SetActorLocation(PlayerLocation, NULL, NULL, NULL);
+	ImGui::SetCursorPosY(640);
+	if (ImGui::Button("Teleport to me", ImVec2(400, 30)) && !once) {
+		PawnActor->K2_SetActorLocation(PlayerLocation, NULL, NULL, NULL);
 	}
+	ImGui::SetCursorPosY(670);
+	if (ImGui::Button("Spawn to me", ImVec2(400, 30)) && !once) {
+			//AProp_C* test = static_cast<AProp_C*>(ActorObject);// 0x018 child objects //todo
+			//	if (test->GetName().c_str() == ActorObject->GetName().c_str()) {
+			//}
+			//MainGameMode->SpawnPropThroughGamemode(ActorObject->Name, ActorObject->GetTransform(), 1, &ActorObject);
+
+			UVictoryBPFunctionLibrary::SpawnActorIntoLevel(World, PawnActor->Class, World->Name, PlayerLocation, FRotator(0), 0);
+		}
 	ImGui::End();
 }
 
