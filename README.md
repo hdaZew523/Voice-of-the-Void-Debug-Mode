@@ -34,7 +34,7 @@ Using engine features to interact with a Unreal Engine-based game. Using DLL inj
 1. Download from realese / Compile project
 2. Place the exe file together with the dll in any convenient place (Or download only DLL, and use your own DLL injection tool)
 3. Start the game
-4. Start exe file (Administrator rights are not required)
+4. Start exe file (Administrator rights are not required) / Or Inject the DLL with your tool
 5. Press "Insert" for open a start window
 
 ## How to Compile
