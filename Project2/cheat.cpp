@@ -339,9 +339,7 @@ void cheat_manager::tips() {
 		\n\n1. Don't use this program to ruin other people's experiences, please.\
 		\nOnly use it for your own research.\
 		\n\n2. Don't use clock in tutorial levels. \
-		\n2.1 On the pre-alpha 0.8 (pa08_0011) pre-test, there is no map border crossing in the first tutorial level, you can disable collision. \
-		\nDon't forget to return collision it when switching to tutorial3_1.\
-        \n2.2 No boundary traversal in classic levels when collision is destroyed. \
+        \n2.1 No boundary traversal in classic levels when collision is destroyed. \
 		\n\n3. Sound is buggy when accelerating time, be careful. \
         \nThere is also a chance to screw up the save if you rewind a few days forward, which will ruin the ability to save the game.\
 		\n\n4. If your computer is weak enough, don't use high distance, box and line rendering.\
