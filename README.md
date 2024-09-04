@@ -9,6 +9,12 @@ Using engine features to interact with a Unreal Engine-based game. Using externa
 
 * Exploits
   * Console F2
+
+   | A few interesting commands |  |
+  | ------ | ------ |
+  | Toggledebugcamera | Toggles the player controller to the debug camera controller |
+  | Summon | Summon objects. Example: Summon prop_gravgun_c. You can use [this list][secret] |
+  | Show staticmeshes/BSP | Disables objects / walls. BSP only shows the result in tutorial level.
   * Game Time (Additional window)
   * Fly
     * Disable Collision
@@ -47,3 +53,5 @@ You will need developer tools directly related to Unreal Engine and Voice of the
 2. Put developer tools in "Project2" folder
 3. Make sure Realese and x64 are selected
 4. Compile
+
+   [secret]: <https://raw.githubusercontent.com/Vyollet/Voice-of-the-Void-Debug-Mode/main/Project2/secrets>
