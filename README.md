@@ -12,8 +12,8 @@ Using engine features to interact with a Unreal Engine-based game. Using externa
 
    | A few interesting commands |  |
   | ------ | ------ |
-  | Toggledebugcamera | Toggles the player controller to the debug camera controller |
-  | Summon | Summon objects. Example: Summon prop_gravgun_c. You can use [this list][secret] |
+  | Toggledebugcamera | Toggles the player controller to the debug camera controller. |
+  | Summon | Summon objects. Example: ```Summon prop_gravgun_c```. You can use [this list][secret] to look up object names. |
   | Show staticmeshes/BSP | Disables objects / walls. BSP only shows the result in tutorial level.
   * Game Time (Additional window)
   * Fly
