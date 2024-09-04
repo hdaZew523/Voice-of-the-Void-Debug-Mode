@@ -1,9 +1,9 @@
 # Voice of the Void/Unreal Engine Debug Mode
 **for resercheing purposes**
 
-Using engine features to interact with a Unreal Engine-based game. Using DLL injection.
+Using engine features to interact with a Unreal Engine-based game. Using external DLL injection.
 
-![alt text](img/1.png)
+![alt text](img/2.png)
 
 ## Features
 * ESP
@@ -32,9 +32,9 @@ Using engine features to interact with a Unreal Engine-based game. Using DLL inj
 
 ## Using
 1. Download from realese / Compile project
-2. Place the exe file together with the dll in any convenient place (Or download only DLL, and use your own DLL injection tool)
+2. Place the exe file together with the dll in any convenient place
 3. Start the game
-4. Start exe file (Administrator rights are not required) / Or Inject the DLL with your tool
+4. Start exe file
 5. Press "Insert" for open a start window
 
 ## How to Compile

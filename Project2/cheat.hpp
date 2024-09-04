@@ -29,6 +29,10 @@ private:
 	FVector bbExtends;
 	FVector Location2;
 	AActor* ActorObject;
+	APawn* PawnActor;
+	AActor* PawnActorClass;
+	std::string ActorName;
+
 	float sphereRadius = 1.0f;
 	bool actorScan = false;
 	int ActorsNum;
@@ -45,9 +49,8 @@ public:
 	void game_time(float day);
 	void ESP();
 	void actor_scan();
-	void removed_items();
-	void text_generate(const char* entity, float X, float Y, float Z);
-	void teleportList();
-	void teleport(TslEntity entity);
+	void Cookies();
+	void visiblecookies(const char* entity, float X, float Y, float Z);
+	void teleportList(TslEntity entity);
 	void tips();
 };

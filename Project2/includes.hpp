@@ -17,8 +17,9 @@
 #include "SDK/DaynightCycle_classes.hpp"
 #include "SDK/MainGamemode_classes.hpp"
 #include "SDK/Car1_classes.hpp"
-#include "SDK/Prop_batts_classes.hpp"
-
+//#include "SDK/Prop_batts_classes.hpp"
+#include "SDK/VictoryBPLibrary_classes.hpp"
+#include "SDK/Lib_classes.hpp"
 
 #include "cheat.hpp"
 

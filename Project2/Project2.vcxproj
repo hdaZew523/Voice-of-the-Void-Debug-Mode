@@ -143,6 +143,7 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="includes.hpp" />
     <ClCompile Include="kiero\kiero.cpp" />
@@ -157,9 +158,11 @@
     <ClCompile Include="SDK\Car1_functions.cpp" />
     <ClCompile Include="SDK\CoreUObject_functions.cpp" />
     <ClCompile Include="SDK\Engine_functions.cpp" />
+    <ClCompile Include="SDK\Lib_functions.cpp" />
     <ClCompile Include="SDK\MainGamemode_functions.cpp" />
     <ClCompile Include="SDK\MainPlayer_functions.cpp" />
     <ClCompile Include="SDK\Prop_batts_functions.cpp" />
+    <ClCompile Include="SDK\VictoryBPLibrary_functions.cpp" />
     <ClCompile Include="settings.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -948,6 +948,10 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+Project2/SDK
+Project2/SDK.hpp
+Project2/UnrealContainers.hpp
+
 ##### C++
 # Prerequisites
 *.d
@@ -1043,3 +1047,4 @@ dkms.conf
 *.uf2
 # Raspberry Pi Pico disassembler file
 *.dis
+

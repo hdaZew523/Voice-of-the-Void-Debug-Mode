@@ -6,18 +6,21 @@ std::list <std::string> menu = {};
 
 void cheat_manager::cheat_thread()
 {
+	//std::cout << Obj3->Name.ToString();
+
 	if (cfg->tips && cfg->menu_open) {
 		tips();
 	}
 
 	static bool once;
-    Engine = SDK::UEngine::GetEngine();
+	Engine = SDK::UEngine::GetEngine();
 	World = SDK::UWorld::GetWorld();
 	MyController = World->OwningGameInstance->LocalPlayers[0]->PlayerController;
 	GameMode = World->AuthorityGameMode;
 	MainGameMode = static_cast<SDK::AMainGamemode_C*>(GameMode);
 	Time = static_cast<SDK::ADaynightCycle_C*>(MainGameMode->DaynightCycle);
-	
+
+
 	if (cfg->debug_console && !once) {
 		SDK::UInputSettings::GetDefaultObj()->ConsoleKeys[0].KeyName = SDK::UKismetStringLibrary::Conv_StringToName(L"F2");
 		SDK::UObject* NewObject = SDK::UGameplayStatics::SpawnObject(Engine->ConsoleClass, Engine->GameViewport);
@@ -25,43 +28,91 @@ void cheat_manager::cheat_thread()
 		once = true;
 	}
 
-	if (MyController->Pawn->IsA(SDK::AMainPlayer_C::StaticClass()) || MyController->Pawn->IsA(SDK::ACar1_C::StaticClass()))
-	{
-		
-		if (MyController->Pawn->IsA(SDK::AMainPlayer_C::StaticClass())) {
-			MyPawnPlayer = static_cast<SDK::AMainPlayer_C*>(MyController->Pawn);
-			PlayerLocation = MyPawnPlayer->K2_GetActorLocation();
-			Level = World->PersistentLevel;
+
+	if (cfg->list_objects) {
+		Cookies();
+	}
+
+	if (!MyController->IsA(SDK::ADebugCameraController::StaticClass())) {
+		if (MyController->Pawn->IsA(SDK::AMainPlayer_C::StaticClass()) || MyController->Pawn->IsA(SDK::ACar1_C::StaticClass()))
+		{
+
+			if (MyController->Pawn->IsA(SDK::AMainPlayer_C::StaticClass())) {
+				MyPawnPlayer = static_cast<SDK::AMainPlayer_C*>(MyController->Pawn);
+				PlayerLocation = MyPawnPlayer->K2_GetActorLocation();
+				Level = World->PersistentLevel;
+			}
+
+			else if (MyController->Pawn->IsA(SDK::ACar1_C::StaticClass())) {
+				bool once = false;
+				Car = static_cast<SDK::ACar1_C*>(MyController->Pawn);
+
+				PlayerLocation = Car->K2_GetActorLocation();
+				if (cfg->fuel) {
+					Car->Diff_fuel = 0.0f;
+				}
+				else if (!cfg->fuel) {
+					Car->Diff_fuel = 1.0f;
+				}
+
+				if (cfg->health_car) {
+					Car->Health = 100.0f;
+				}
+			}
+
+			exploits();
+
+			if (cfg->esp) {
+
+				SDK::TArray<SDK::AActor*>& volatile Actors_list = Level->Actors;
+				if ((actorScan && entityList.empty()) || Actors_list.Num() != ActorsNum) {
+					actorScan = false;
+				}
+				if (!actorScan) {
+					entityList.clear();
+					actor_scan();
+					actorScan = true;
+				}
+				if (!entityList.empty()) {
+					ESP();
+				}
+			}
+		}
+		if (!MyController->Pawn->IsA(SDK::AMainPlayer_C::StaticClass()) && !MyController->Pawn->IsA(SDK::ACar1_C::StaticClass()))
+		{
+			cfg->time = cfg->noclip = cfg->esp = cfg->game_time = cfg->logs = cfg->teleport = cfg->list_objects = false;
+			menu.clear();
+			entityList.clear();
+			TslEntity test;
+			test = {};
+			actorScan = false;
+		}
+	}
+	else if (MyController->IsA(SDK::ADebugCameraController::StaticClass())) {
+
+		static bool stack = false;
+
+		if (cfg->menu_open && !stack) {
+			cfg->pause = stack = cfg->menu_open;
+		}
+		else if (!cfg->menu_open && stack)
+		{
+			cfg->pause = stack = cfg->menu_open;
+		}
+		if (!UGameplayStatics::IsGamePaused(World) && cfg->pause) {
+			UGameplayStatics::SetGamePaused(World, true);
+		}
+		else if (UGameplayStatics::IsGamePaused(World) && !cfg->pause) {
+			UGameplayStatics::SetGamePaused(World, false);
 		}
 
-		else if (MyController->Pawn->IsA(SDK::ACar1_C::StaticClass())) {
-			bool once = false;
-			Car = static_cast<SDK::ACar1_C*>(MyController->Pawn);
-
-			PlayerLocation = Car->K2_GetActorLocation();
-			if (cfg->fuel) {
-				Car->Diff_fuel = 0.0f;
-			}
-			else if (!cfg->fuel) {
-				Car->Diff_fuel = 1.0f;
-			}
-
-			if (cfg->health_car) {
-				Car->Health = 100.0f;
-			}
-		}
-
-		exploits();
+		PlayerLocation =  MyController->K2_GetActorLocation();
+		Level = World->PersistentLevel;
 
 		if (cfg->esp) {
-			//if (cfg->prop) {
-			//	teleport();
-			//}
 
 			SDK::TArray<SDK::AActor*>& volatile Actors_list = Level->Actors;
-			if (cfg->logs) {
-				removed_items();
-			}
+
 			if ((actorScan && entityList.empty()) || Actors_list.Num() != ActorsNum) {
 				actorScan = false;
 			}
@@ -74,13 +125,6 @@ void cheat_manager::cheat_thread()
 				ESP();
 			}
 		}
-	}
-	if (!MyController->Pawn->IsA(SDK::AMainPlayer_C::StaticClass()) && !MyController->Pawn->IsA(SDK::ACar1_C::StaticClass()))
-	{
-		cfg->time = cfg->noclip = cfg->esp = cfg->game_time = cfg->logs = false;
-		menu.clear();
-		entityList.clear();
-		actorScan = false;
 	}
 }
 
@@ -126,14 +170,6 @@ void cheat_manager::ESP() {
 			actorScan = false;
 			continue;
 		}		
-		
-		// test props spawn/usage //
-		
-		//if (entity.ActorObject-> IsA(SDK::AProp_batts_C::StaticClass())) {
-		//	AProp_C* Prop = static_cast<AProp_C*>(entity.ActorObject);
-		//	AProp_batts_C* battery = static_cast<AProp_batts_C*>(Prop);
-		//	battery->Energy = -1.0f;
-		//}
 
 		entity.ActorObject->GetActorBounds(true, &entity.Location, &entity.Bounds, false);
 		
@@ -144,9 +180,8 @@ void cheat_manager::ESP() {
 				if (cfg->box) Draw.Box3D(MyController, entity.Location, entity.Bounds);
 				if (cfg->names) {
 					ImGui::GetBackgroundDrawList()->AddText(Pos, ImColor(255, 255, 255), entity.Name.c_str());
-					if (cfg->list_objects && !cfg->all_objects) {
-						text_generate(entity.Name.c_str(), entity.Location.X, entity.Location.Y, entity.Location.Z);
-					}
+					if(cfg->list_objects)
+						visiblecookies(entity.Name.c_str(), entity.Location.X, entity.Location.Y, entity.Location.Z);
 				}
 			}
 			if (cfg->lines) {
@@ -154,13 +189,8 @@ void cheat_manager::ESP() {
 			}
 		}
 
-		if (cfg->all_objects && cfg->list_objects && cfg->names) {
-			text_generate(entity.Name.c_str(), entity.Location.X, entity.Location.Y, entity.Location.Z);
-		}		
-		
 		if (cfg->prop && cfg->esp && cfg->menu_open){
-			teleportList();
-			teleport(entityListCopy[i]);
+			teleportList(entityListCopy[i]);
 		}
 	}
 }
@@ -240,7 +270,7 @@ void cheat_manager::exploits() {
 void cheat_manager::game_time(float day) {
 	auto& screen = ImGui::GetIO();
 	ImGui::StyleColorsDark();
-	ImGui::SetNextWindowPos(ImVec2(screen.DisplaySize.x - (screen.DisplaySize.x), NULL), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(screen.DisplaySize.x / 2, NULL), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(60, 40));
 	ImGui::Begin("Time", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);
 	ImGui::SetWindowFontScale(1.5f);
@@ -249,17 +279,40 @@ void cheat_manager::game_time(float day) {
 	ImGui::End();
 }
 
-void cheat_manager::text_generate(const char* entity, float X, float Y , float Z) {
+void cheat_manager::Cookies() {
 	auto& screen = ImGui::GetIO();
+
 	ImGui::SetNextWindowPos(ImVec2(screen.DisplaySize.x - (screen.DisplaySize.x / 5), NULL), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(screen.DisplaySize.x / 5, screen.DisplaySize.y), ImGuiCond_Once);
 	ImGui::StyleColorsDark();
-	ImGui::Begin("List Cookies", nullptr, ImGuiWindowFlags_NoScrollbar);
-	ImGui::BeginChild("Scrolling");
-	ImGui::Text("%s | X:%f Y:%f Z:%f", entity, X,Y,Z);
+	ImGui::Begin("Cookies", nullptr, ImGuiWindowFlags_NoScrollbar);
+
+	ImGui::SeparatorText("Visible Cookies");
+	ImGui::BeginChild("visibleCookies", ImVec2(ImGui::GetWindowWidth(), (ImGui::GetWindowHeight() / 2) - 50), ImGuiChildFlags_Border);
+	ImGui::EndChild();
+
+	ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2);
+	ImGui::SeparatorText("Missing Cookies(");
+			ImGui::BeginChild("Scrolling");
+			for (std::string men : menu) {
+				ImGui::Text(men.c_str());
+			}
+			if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+				ImGui::SetScrollHereY(1.0f);
+			}
+			ImGui::EndChild();
+			ImGui::EndTabItem();
+}
+
+void cheat_manager::visiblecookies(const char* entity, float X, float Y, float Z) {
+
+	ImGui::Begin("Cookies", nullptr, ImGuiWindowFlags_NoScrollbar);
+	ImGui::BeginChild("visibleCookies");
+	ImGui::Text("%s | X:%f Y:%f Z:%f", entity, X, Y, Z);
 	ImGui::EndChild();
 	ImGui::End();
 }
+
 
 bool waypoint_getter(void* data, int index, const char** output)
 {
@@ -270,17 +323,8 @@ bool waypoint_getter(void* data, int index, const char** output)
 	return true;
 }
 
-void cheat_manager::teleportList() {
-	ImGui::SetNextWindowSize({ 400, 700 });
-	ImGui::SetNextWindowPos({ 500, 200 }, ImGuiCond_Once);
-	ImGui::StyleColorsDark();
-	ImGui::Begin("Teleport objects", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse);
-	ImGui::PushItemWidth(-1);
-	ImGui::ListBox("##List box", &ChooseObject, waypoint_getter, entityList.data(), entityList.size(), 35);
-	ImGui::End();
-}
+void cheat_manager::teleportList(TslEntity entity) {
 
-void cheat_manager::teleport(TslEntity entity) {
 	bool once = false;
 
 	if (!once && ChooseObject != item_previous) {
@@ -288,43 +332,38 @@ void cheat_manager::teleport(TslEntity entity) {
 			item_previous = ChooseObject;
 			once = true;
 			ActorObject = static_cast<AActor*>(entity.ActorObject); //rechange offset 0x08? props or 0x19B 
-			PawnActor = static_cast<APawn*>(entity.PawnActor);  //rechange offset 0x08? props or 0x19B 
+			//PawnActor = static_cast<APawn*>(entity.PawnActor);  //rechange offset 0x08? props or 0x19B 
 		}
 	}
 
 	else if (once && ChooseObject == item_previous) once = false;
 
-	ImGui::Begin("Teleport objects", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse);
-	ImGui::SetCursorPosY(640);
-	if (ImGui::Button("Teleport to me", ImVec2(400, 30)) && !once) {
-		PawnActor->K2_SetActorLocation(PlayerLocation, NULL, NULL, NULL);
-	}
-	ImGui::SetCursorPosY(670);
-	if (ImGui::Button("Spawn to me", ImVec2(400, 30)) && !once) {
-			//AProp_C* test = static_cast<AProp_C*>(ActorObject);// 0x018 child objects //todo
-			//	if (test->GetName().c_str() == ActorObject->GetName().c_str()) {
-			//}
-			//MainGameMode->SpawnPropThroughGamemode(ActorObject->Name, ActorObject->GetTransform(), 1, &ActorObject);
 
-			UVictoryBPFunctionLibrary::SpawnActorIntoLevel(World, PawnActor->Class, World->Name, PlayerLocation, FRotator(0), 0);
-		}
-	ImGui::End();
-}
-
-void cheat_manager::removed_items() {
-	auto& screen = ImGui::GetIO();
-	ImGui::SetNextWindowPos(ImVec2(screen.DisplaySize.x - ((screen.DisplaySize.x / 5)*2), NULL), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(screen.DisplaySize.x / 5, screen.DisplaySize.y / 3), ImGuiCond_Once);
+	ImGui::SetNextWindowSize({ 400, 520 });
+	ImGui::SetNextWindowPos({ 500, 0 }, ImGuiCond_Once);
 	ImGui::StyleColorsDark();
-	ImGui::Begin("Missing Cookies(", nullptr, ImGuiWindowFlags_NoScrollbar);
-	ImGui::BeginChild("Scrolling removes Items");
-	for (std::string men : menu) {
-		ImGui::Text(men.c_str());
+	ImGui::Begin("Teleport objects", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse);
+	ImGui::PushItemWidth(-1);
+	ImGui::ListBox("##List box", &ChooseObject, waypoint_getter, entityList.data(), entityList.size(), 25);
+	ImGui::SetCursorPosY(470);
+	if (ImGui::Button("Teleport to me", ImVec2(400, 20)) && !once) {
+		ActorObject->K2_SetActorLocation(PlayerLocation, NULL, NULL, NULL);
 	}
-	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
-		ImGui::SetScrollHereY(1.0f);
+
+	
+	if (ImGui::Button("Destroy", ImVec2(400, 20)) && !once) {
+		ActorObject->K2_DestroyActor();
 	}
-	ImGui::EndChild();
+	//ImGui::SetCursorPosY(670);
+//if (ImGui::Button("Spawn to me", ImVec2(400, 30)) && !once) {
+		//AProp_C* test = static_cast<AProp_C*>(ActorObject);// 0x018 child objects //todo
+		//	if (test->GetName().c_str() == ActorObject->GetName().c_str()) {
+		//}
+		//MainGameMode->SpawnPropThroughGamemode(ActorObject->Name, ActorObject->GetTransform(), 1, &ActorObject);
+
+		//UVictoryBPFunctionLibrary::SpawnActorIntoLevel(World, PawnActor->Class, World->Name, PlayerLocation, FRotator(0), 0);
+//}
+
 	ImGui::End();
 }
 
@@ -344,7 +383,6 @@ void cheat_manager::tips() {
         \nThere is also a chance to screw up the save if you rewind a few days forward, which will ruin the ability to save the game.\
 		\n\n4. If your computer is weak enough, don't use high distance, box and line rendering.\
         \n\n5. When teleporting, use the collision disable to avoid getting into backrooms. \
-        \n\n6. Teleportation has been limited to props (partially) so as not to cause random crashes when moving certain objects.\
 		\n\nHave fun! \
 		");
 	ImGui::SetCursorPos(ImVec2(780, 330));
@@ -354,3 +392,5 @@ void cheat_manager::tips() {
 		cfg->tips = false;
 	ImGui::End();
 }
+
+
