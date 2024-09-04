@@ -37,7 +37,7 @@ Using engine features to interact with a Unreal Engine-based game. Using externa
 1. Download from realese (DLL and, if you don't have the injector, you will also need the exe file) / Compile project
 2. Place the exe file together with the DLL in any convenient place.
 3. Start the game
-4. Start exe file
+4. Start exe file (Don't need administrator privileges)
 5. Press "Insert" in the game for open a start window
 
 ## How to Compile
