@@ -293,15 +293,15 @@ void cheat_manager::Cookies() {
 
 	ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2);
 	ImGui::SeparatorText("Missing Cookies(");
-			ImGui::BeginChild("Scrolling");
-			for (std::string men : menu) {
-				ImGui::Text(men.c_str());
-			}
-			if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
-				ImGui::SetScrollHereY(1.0f);
-			}
-			ImGui::EndChild();
-			ImGui::EndTabItem();
+	ImGui::BeginChild("Scrolling");
+		for (std::string men : menu) {
+			ImGui::Text(men.c_str());
+		}
+		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+			ImGui::SetScrollHereY(1.0f);
+		}
+	ImGui::EndChild();
+	ImGui::End();
 }
 
 void cheat_manager::visiblecookies(const char* entity, float X, float Y, float Z) {
