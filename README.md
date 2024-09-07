@@ -1,7 +1,7 @@
 # Voice of the Void/Unreal Engine Debug Mode
 **for resercheing purposes**
 
-Using engine features to interact with a Unreal Engine-based game. Using external DLL injection.
+Using engine features to interact with a Unreal Engine-based game. Using DLL injection.
 
 ![alt text](img/2.png)
 
@@ -54,4 +54,4 @@ You will need developer tools directly related to Unreal Engine and Voice of the
 3. Make sure Realese and x64 are selected
 4. Compile
 
-   [secret]: <https://raw.githubusercontent.com/Vyollet/Voice-of-the-Void-Debug-Mode/main/Project2/secrets>
+   [secret]: <https://raw.githubusercontent.com/Vyollet/Voice-of-the-Void-Debug-Mode/main/Project2/.secrets>
