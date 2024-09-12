@@ -32,6 +32,12 @@ private:
 	APawn* PawnActor;
 	AActor* PawnActorClass;
 	std::string ActorName;
+	FString CurrentWorldName;
+	FString PreviousWorldName;
+
+	SDK::UFunction* state;
+
+	AActor* Bypass;
 
 	float sphereRadius = 1.0f;
 	bool actorScan = false;
@@ -53,4 +59,5 @@ public:
 	void visiblecookies(const char* entity, float X, float Y, float Z);
 	void teleportList(TslEntity entity);
 	void tips();
+	void bypass();
 };

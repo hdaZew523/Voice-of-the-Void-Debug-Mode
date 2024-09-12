@@ -1,18 +1,55 @@
 #include "includes.hpp"
 
+#include <fstream>
+
 std::vector<TslEntity> entityList;
 
 std::list <std::string> menu = {};
 
+///////////
+//typedef void(__thiscall* ProcessEventType2)(UObject*, UFunction*, void*);
+//typedef void(__thiscall* ProcessEventType)(SDK::UObject* Context, UFunction* TheStack, void* Result);
+//
+//typedef void(__thiscall* PostRenderType)(UGameViewportClient*, UCanvas*);
+//
+//ProcessEventType OProcessEventOriginal = nullptr;
+//ProcessEventType OProcessEvent = nullptr;
+//PostRenderType OPostRender = nullptr;
+//
+//std::ofstream myfile;
+//
+//void CallFunc(SDK::UObject* Context, SDK::UFunction* TheStack, void* Result)
+//{
+//	if (TheStack->Class->GetFullName().find("Tick") != std::string::npos){}
+//		
+//	else myfile << Context->GetName().c_str() << " || " << TheStack->Class->GetFullName().c_str() << " || " << std::dec << Result << std::endl;
+//
+//	OProcessEventOriginal(Context, TheStack, Result);
+//}
+	
+	
+//void process_event_hook (UObject* caller, UFunction* fn, void* parms)
+//{
+//
+//	std::cout << caller->GetName().c_str() << " | " << fn->GetFullName().c_str() << std::endl;
+//
+//	if (fn->GetFullName() == "Function Engine.KismetMathLibrary.IsPointInBox")
+//		std::cout << "success" << std::endl;
+//
+//	OProcessEventOriginal(caller, fn, parms);
+//}
+//////////
+
 void cheat_manager::cheat_thread()
 {
+	
 	//std::cout << Obj3->Name.ToString();
 
 	if (cfg->tips && cfg->menu_open) {
 		tips();
 	}
 
-	static bool once;
+	static bool once, scan, functionGet = false;
 	Engine = SDK::UEngine::GetEngine();
 	World = SDK::UWorld::GetWorld();
 	MyController = World->OwningGameInstance->LocalPlayers[0]->PlayerController;
@@ -21,13 +58,53 @@ void cheat_manager::cheat_thread()
 	Time = static_cast<SDK::ADaynightCycle_C*>(MainGameMode->DaynightCycle);
 
 
+	//DWORD64** ProcessEvent = *(DWORD64***)(Engine->GameViewport)+Offsets::ProcessEventIdx;
+	//OProcessEvent = (ProcessEventType)(*ProcessEvent);
+
+
+	//if (!functionGet) {
+	//	state = ULib_C::StaticClass()->GetFunction("lib_C", "AddPoints");
+	//	//state = SDK::UObject::FindObject<UFunction>("Function mainPlayer.mainPlayer_C.addDamage");
+	//	functionGet = true;
+	//}
+
+
+	CurrentWorldName = UGameplayStatics::GetCurrentLevelName(World, true);
+
+	if (PreviousWorldName != CurrentWorldName) {
+		PreviousWorldName = CurrentWorldName;
+		cfg->fly = cfg->noclip = false;
+	}
+
+
+	static bool hookOnce = false;
+
+	//bypass();
+	
+	//MH_CreateHook((LPVOID)state->ExecFunction, &CallFunc, reinterpret_cast<void**>(&OProcessEventOriginal));
+
+	//if (cfg->parse_functions) {
+	//	
+	//	if (!hookOnce) {
+	//		myfile.open("example.txt");
+	//		hookOnce = true;
+	//	}
+	//	MH_EnableHook((DWORD_PTR*)state->ExecFunction);
+	//	//hookOnce = true;
+	//}
+	//if (!cfg->parse_functions) {
+	//	myfile.close();
+	//	MH_DisableHook((DWORD_PTR*)state->ExecFunction);
+	//	//hookOnce = false;
+	//}
+
+
 	if (cfg->debug_console && !once) {
 		SDK::UInputSettings::GetDefaultObj()->ConsoleKeys[0].KeyName = SDK::UKismetStringLibrary::Conv_StringToName(L"F2");
 		SDK::UObject* NewObject = SDK::UGameplayStatics::SpawnObject(Engine->ConsoleClass, Engine->GameViewport);
 		Engine->GameViewport->ViewportConsole = static_cast<SDK::UConsole*>(NewObject);
 		once = true;
 	}
-
 
 	if (cfg->list_objects) {
 		Cookies();
@@ -42,6 +119,7 @@ void cheat_manager::cheat_thread()
 				PlayerLocation = MyPawnPlayer->K2_GetActorLocation();
 				Level = World->PersistentLevel;
 			}
+
 
 			else if (MyController->Pawn->IsA(SDK::ACar1_C::StaticClass())) {
 				bool once = false;
@@ -80,7 +158,7 @@ void cheat_manager::cheat_thread()
 		}
 		if (!MyController->Pawn->IsA(SDK::AMainPlayer_C::StaticClass()) && !MyController->Pawn->IsA(SDK::ACar1_C::StaticClass()))
 		{
-			cfg->time = cfg->noclip = cfg->esp = cfg->game_time = cfg->logs = cfg->teleport = cfg->list_objects = false;
+			cfg->time = cfg->fly = cfg->noclip = cfg->game_time = cfg->logs = cfg->teleport = cfg->list_objects = scan = false;
 			menu.clear();
 			entityList.clear();
 			TslEntity test;
@@ -129,7 +207,9 @@ void cheat_manager::cheat_thread()
 }
 
 void cheat_manager::actor_scan() {
+	static bool skip = false;
 	int i = -1;
+
 	SDK::TArray<SDK::AActor*>& volatile Actors_list = Level->Actors;
 	ActorsNum = Actors_list.Num();
 	std::vector<TslEntity> tmpList;
@@ -141,6 +221,9 @@ void cheat_manager::actor_scan() {
 		if (Actor->GetName() == MyPawnPlayer->GetName())
 			continue;
 		
+		if (Actor->GetName() == "tutorial3_C_1" || Actor->GetName() == "tutorial3-1_C_0" || Actor->GetName() == "tutorial3-2_C_1") 
+			Bypass = Actor;
+
 		i++;
 
 		Pawn = static_cast<SDK::APawn*>(Actor);
@@ -172,22 +255,23 @@ void cheat_manager::ESP() {
 		}		
 
 		entity.ActorObject->GetActorBounds(true, &entity.Location, &entity.Bounds, false);
-		
-		if (MyController->ProjectWorldLocationToScreen(entity.Location, &Screen, false) && MyPawnPlayer->GetDistanceTo(entity.ActorObject) < (cfg->distance * 100.0f))
-		{
-			ImVec2 Pos(Screen.X, Screen.Y);
-			if (Draw.IsOnScreen(Pos)) {
-				if (cfg->box) Draw.Box3D(MyController, entity.Location, entity.Bounds);
-				if (cfg->names) {
-					ImGui::GetBackgroundDrawList()->AddText(Pos, ImColor(255, 255, 255), entity.Name.c_str());
-					if(cfg->list_objects)
-						visiblecookies(entity.Name.c_str(), entity.Location.X, entity.Location.Y, entity.Location.Z);
+		if(cfg->esp || cfg->names || cfg->lines)
+			if (MyController->ProjectWorldLocationToScreen(entity.Location, &Screen, false) && \
+				MyPawnPlayer->GetDistanceTo(entity.ActorObject) < (cfg->distance * 100.0f))
+			{
+				ImVec2 Pos(Screen.X, Screen.Y);
+				if (Draw.IsOnScreen(Pos)) {
+					if (cfg->box) Draw.Box3D(MyController, entity.Location, entity.Bounds);
+					if (cfg->names) {
+						ImGui::GetBackgroundDrawList()->AddText(Pos, ImColor(255, 255, 255), entity.Name.c_str());
+						if(cfg->list_objects)
+							visiblecookies(entity.Name.c_str(), entity.Location.X, entity.Location.Y, entity.Location.Z);
+					}
+				}
+				if (cfg->lines) {
+					ImGui::GetBackgroundDrawList()->AddLine(ImVec2(static_cast<float>(io.DisplaySize.x / 2), static_cast<float>(io.DisplaySize.y)), Pos, ImColor(255, 0, 0), 0.7);
 				}
 			}
-			if (cfg->lines) {
-				ImGui::GetBackgroundDrawList()->AddLine(ImVec2(static_cast<float>(io.DisplaySize.x / 2), static_cast<float>(io.DisplaySize.y)), Pos, ImColor(255, 0, 0), 0.7);
-			}
-		}
 
 		if (cfg->prop && cfg->esp && cfg->menu_open){
 			teleportList(entityListCopy[i]);
@@ -196,7 +280,7 @@ void cheat_manager::ESP() {
 }
 
 void cheat_manager::exploits() {
-	static bool once2, once3, once4, once5, once6, once7, thrOnce1, thrOnce2, thrOnce3 = false;
+	static bool once2, once3, once4, once5, once6, once7, thrOnce1, thrOnce2, thrOnce3, once8 = false;
 
 	if (cfg->menu_open && !once5) {
 		cfg->pause = once5 = cfg->menu_open;
@@ -247,19 +331,31 @@ void cheat_manager::exploits() {
 	if (cfg->game_time) {
 		game_time(Time->Day);
 	}
-	if (cfg->fly) {
+
+	if (cfg->fly && !once2) {
+		if (!once8 && Bypass && (CurrentWorldName == L"tutorial3" || CurrentWorldName == L"tutorial3_1" || CurrentWorldName == L"tutorial3_2")) {
+			Bypass->K2_DestroyActor();
+			Bypass = nullptr;
+			once8 = true;
+		}
 		MyPawnPlayer->Noclip = cfg->fly;
 		MyPawnPlayer->CharacterMovement->MovementMode = SDK::EMovementMode::MOVE_None;
+		MyPawnPlayer->CharacterMovement->GravityScale = 0;
 		once2 = true;
+
 	}
-	if (cfg->noclip && cfg->fly) {
+
+	if (cfg->noclip && !once3) {
 		MyPawnPlayer->bActorEnableCollision = 0;
 		once3 = true;
 	}
-	else if (!cfg->fly && once2) {
+
+	if (!cfg->fly && once2) {
+		MainGameMode->backroomsEnabled = true;
 		MyPawnPlayer->Noclip = cfg->fly;
+		MyPawnPlayer->CharacterMovement->GravityScale = 1;
 		MyPawnPlayer->CharacterMovement->MovementMode = SDK::EMovementMode::MOVE_Falling;
-		cfg->noclip = once2 = false;
+		cfg->noclip = once2 = once8 = false;
 	}
 	if (!cfg->noclip && once3) {
 		MyPawnPlayer->bActorEnableCollision = 1;
@@ -354,16 +450,6 @@ void cheat_manager::teleportList(TslEntity entity) {
 	if (ImGui::Button("Destroy", ImVec2(400, 20)) && !once) {
 		ActorObject->K2_DestroyActor();
 	}
-	//ImGui::SetCursorPosY(670);
-//if (ImGui::Button("Spawn to me", ImVec2(400, 30)) && !once) {
-		//AProp_C* test = static_cast<AProp_C*>(ActorObject);// 0x018 child objects //todo
-		//	if (test->GetName().c_str() == ActorObject->GetName().c_str()) {
-		//}
-		//MainGameMode->SpawnPropThroughGamemode(ActorObject->Name, ActorObject->GetTransform(), 1, &ActorObject);
-
-		//UVictoryBPFunctionLibrary::SpawnActorIntoLevel(World, PawnActor->Class, World->Name, PlayerLocation, FRotator(0), 0);
-//}
-
 	ImGui::End();
 }
 
@@ -393,4 +479,15 @@ void cheat_manager::tips() {
 	ImGui::End();
 }
 
+void cheat_manager::bypass() {
+	auto& screen = ImGui::GetIO();
+	ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(screen.DisplaySize.x * 0.5f, screen.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::StyleColorsDark();
+	ImGui::Begin("Bypass Restrictions", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);
 
+	ImGui::Checkbox("Parse functions", &cfg->parse_functions);
+
+
+	ImGui::End();
+}

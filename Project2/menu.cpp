@@ -187,7 +187,7 @@ void menu_imgui::cheat_gui()
 					ImGui::SetCursorPosX(final_cursor_pos + 15);
 					ImGui::Checkbox("Draw Distance", &cfg->draw_distance);
 					if (cfg->draw_distance) {
-						ImGui::SliderFloat("Distance Value", &cfg->distance, 0.1, 50000.0f, "%.3lf", ImGuiSliderFlags_Logarithmic);
+						ImGui::SliderFloat("Distance Value", &cfg->distance, 0.1, 500000.0f, "%.3lf", ImGuiSliderFlags_Logarithmic);
 					}
 					ImGui::SetCursorPosX(final_cursor_pos + 15);
 					ImGui::Checkbox("Names", &cfg->names);

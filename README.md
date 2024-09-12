@@ -5,6 +5,10 @@ Using engine features to interact with a Unreal Engine-based game. Using DLL inj
 
 ![alt text](img/2.png)
 
+Bypass tutorial restrictions
+![alt text](img/3.png)
+
+![alt text](img/4.png)
 ## Features
 
 * Exploits
@@ -14,7 +18,8 @@ Using engine features to interact with a Unreal Engine-based game. Using DLL inj
   | ------ | ------ |
   | Toggledebugcamera | Toggles the player controller to the debug camera controller. |
   | Summon | Summon objects. Example: ```Summon prop_gravgun_c```. You can use [this list][secret] to look up object names. |
-  | Show staticmeshes/BSP | Disables objects / walls. BSP only shows the result in tutorial level.
+  | Show staticmeshes/BSP | Disables objects / walls. BSP only shows the result in tutorial level. |
+  | Open | Switches to an existing level. Example: ```Open tutorial3_1```. You can use [this list][secret]. |
   * Game Time (Additional window)
   * Fly
     * Disable Collision
@@ -55,3 +60,4 @@ You will need developer tools directly related to Unreal Engine and Voice of the
 4. Compile
 
    [secret]: <https://raw.githubusercontent.com/Vyollet/Voice-of-the-Void-Debug-Mode/main/Project2/.secrets>
+   [levels]: <https://votv-ru.fandom.com/ru/wiki/%D0%9C%D0%B8%D1%80%D1%8B_%D0%B8_%D1%82%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B5_%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B8>

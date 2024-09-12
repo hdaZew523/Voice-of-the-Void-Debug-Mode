@@ -20,6 +20,7 @@ public:
 	bool esp;
 	bool pause;
 	bool list_objects;
+	bool parse_functions;
 	bool draw_distance;
 	float distance;
 	bool nodamage;

@@ -9,7 +9,7 @@ void settings::initialize_settings()
 	this->hulk = false;
 	this->lines = false;
 	this->names = false;
-	this->esp = false;
+	this->esp = true;
 	this->box = false;
 	this->noclip = false;
 	this->fly = false;
@@ -20,6 +20,7 @@ void settings::initialize_settings()
 	this->time_change = 0.05f;
 	this->pause = true;
 	this->list_objects = false;
+	this->parse_functions = false;
 	this->draw_distance = false;
 	this->distance = 50.0f;
 	this->nodamage = false;
