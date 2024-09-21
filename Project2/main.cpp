@@ -63,6 +63,7 @@ HRESULT __stdcall hkResize(IDXGISwapChain* pThis, UINT BufferCount, UINT Width, 
 bool init = false;
 HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
+
     bool bMenuVisible = true;
 
 	if (!init)
@@ -99,7 +100,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 	auto& io = ImGui::GetIO();
 	ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 	ImGui::SetWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImGuiCond_Always);
-		
+
 	if (cfg->init_hooks) {
 		sdk->cheat_thread();
 	}
@@ -125,6 +126,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 	ImGui::Render();
 	pContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	return oPresent(pSwapChain, SyncInterval, Flags);
 }
 

@@ -6,7 +6,10 @@ Using engine features to interact with a Unreal Engine-based game. Using DLL inj
 ![alt text](img/2.png)
 
 Bypass tutorial restrictions
+
 ![alt text](img/3.png)
+
+Full Spawn menu (probably), Cheat menu, and true noclip
 
 ![alt text](img/4.png)
 ## Features

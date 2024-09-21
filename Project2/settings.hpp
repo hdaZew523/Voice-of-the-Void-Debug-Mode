@@ -18,7 +18,6 @@ public:
 	bool sleep;
 	bool server;
 	bool esp;
-	bool pause;
 	bool list_objects;
 	bool parse_functions;
 	bool draw_distance;
@@ -33,6 +32,8 @@ public:
 	bool fuel;
 	bool health_car;
 	bool prop;
+	bool spawnmenu;
+	bool cheatmenu;
 
 	void initialize_settings();
 };

@@ -1,55 +1,48 @@
 #include "includes.hpp"
 
 #include <fstream>
+#include <filesystem>
+#include <iostream>
 
 std::vector<TslEntity> entityList;
 
 std::list <std::string> menu = {};
 
+namespace fs = std::filesystem;
+
 ///////////
-//typedef void(__thiscall* ProcessEventType2)(UObject*, UFunction*, void*);
-//typedef void(__thiscall* ProcessEventType)(SDK::UObject* Context, UFunction* TheStack, void* Result);
-//
-//typedef void(__thiscall* PostRenderType)(UGameViewportClient*, UCanvas*);
-//
-//ProcessEventType OProcessEventOriginal = nullptr;
-//ProcessEventType OProcessEvent = nullptr;
-//PostRenderType OPostRender = nullptr;
-//
-//std::ofstream myfile;
-//
+
+typedef void(__thiscall* ProcessEventType2)(UObject*, UFunction*, void*);
+typedef void(__thiscall* ProcessEventType)(SDK::UObject* Context, UFunction* TheStack, void* Result);
+
+typedef void(__thiscall* PostRenderType)(UGameViewportClient*, UCanvas*);
+
+ProcessEventType OProcessEventOriginal = nullptr;
+ProcessEventType OProcessEvent = nullptr;
+PostRenderType OPostRender = nullptr;
+
+std::ofstream myfile;
+
 //void CallFunc(SDK::UObject* Context, SDK::UFunction* TheStack, void* Result)
 //{
-//	if (TheStack->Class->GetFullName().find("Tick") != std::string::npos){}
-//		
-//	else myfile << Context->GetName().c_str() << " || " << TheStack->Class->GetFullName().c_str() << " || " << std::dec << Result << std::endl;
+//	if (TheStack->Class->GetFullName() == "Function mainGamemode.mainGamemode_C.CustomEvent_10")  // disable check
+//		return;
 //
 //	OProcessEventOriginal(Context, TheStack, Result);
 //}
-	
-	
-//void process_event_hook (UObject* caller, UFunction* fn, void* parms)
-//{
-//
-//	std::cout << caller->GetName().c_str() << " | " << fn->GetFullName().c_str() << std::endl;
-//
-//	if (fn->GetFullName() == "Function Engine.KismetMathLibrary.IsPointInBox")
-//		std::cout << "success" << std::endl;
-//
-//	OProcessEventOriginal(caller, fn, parms);
-//}
+
 //////////
+
 
 void cheat_manager::cheat_thread()
 {
-	
-	//std::cout << Obj3->Name.ToString();
+	static bool once9, key = false;
 
 	if (cfg->tips && cfg->menu_open) {
 		tips();
 	}
 
-	static bool once, scan, functionGet = false;
+	static bool once, scan, scan2, scan3, scan4 = false;
 	Engine = SDK::UEngine::GetEngine();
 	World = SDK::UWorld::GetWorld();
 	MyController = World->OwningGameInstance->LocalPlayers[0]->PlayerController;
@@ -57,17 +50,20 @@ void cheat_manager::cheat_thread()
 	MainGameMode = static_cast<SDK::AMainGamemode_C*>(GameMode);
 	Time = static_cast<SDK::ADaynightCycle_C*>(MainGameMode->DaynightCycle);
 
+	//bypass();
 
-	//DWORD64** ProcessEvent = *(DWORD64***)(Engine->GameViewport)+Offsets::ProcessEventIdx;
-	//OProcessEvent = (ProcessEventType)(*ProcessEvent);
-
-
-	//if (!functionGet) {
-	//	state = ULib_C::StaticClass()->GetFunction("lib_C", "AddPoints");
-	//	//state = SDK::UObject::FindObject<UFunction>("Function mainPlayer.mainPlayer_C.addDamage");
-	//	functionGet = true;
-	//}
-
+	if (!key)
+	{
+		fs::path gamepath = fs::path(fs::current_path()).parent_path().parent_path();
+		gamepath += "/key";
+		myfile.open(gamepath);
+		myfile << MainGameMode->MakeItemNames(ULowEntryExtendedStandardLibrary::StringToBytesUtf8(ULowEntryExtendedStandardLibrary::\
+			BytesToBase64(ULowEntryExtendedStandardLibrary::HMAC(ULowEntryExtendedStandardLibrary::\
+				StringToBytesUtf8(UbpCodeLib::GetMachineID()), ULowEntryExtendedStandardLibrary::StringToBytesUtf8(L"suz!eRXc^pFD6D^@eAM@sMN!RFE#gn*6"), \
+				ELowEntryHmacAlgorithm(3), 0, 2147483647), 0, 2147483647)));
+		myfile.close();
+		key = true;
+	}
 
 	CurrentWorldName = UGameplayStatics::GetCurrentLevelName(World, true);
 
@@ -75,28 +71,6 @@ void cheat_manager::cheat_thread()
 		PreviousWorldName = CurrentWorldName;
 		cfg->fly = cfg->noclip = false;
 	}
-
-
-	static bool hookOnce = false;
-
-	//bypass();
-	
-	//MH_CreateHook((LPVOID)state->ExecFunction, &CallFunc, reinterpret_cast<void**>(&OProcessEventOriginal));
-
-	//if (cfg->parse_functions) {
-	//	
-	//	if (!hookOnce) {
-	//		myfile.open("example.txt");
-	//		hookOnce = true;
-	//	}
-	//	MH_EnableHook((DWORD_PTR*)state->ExecFunction);
-	//	//hookOnce = true;
-	//}
-	//if (!cfg->parse_functions) {
-	//	myfile.close();
-	//	MH_DisableHook((DWORD_PTR*)state->ExecFunction);
-	//	//hookOnce = false;
-	//}
 
 
 	if (cfg->debug_console && !once) {
@@ -120,7 +94,6 @@ void cheat_manager::cheat_thread()
 				Level = World->PersistentLevel;
 			}
 
-
 			else if (MyController->Pawn->IsA(SDK::ACar1_C::StaticClass())) {
 				bool once = false;
 				Car = static_cast<SDK::ACar1_C*>(MyController->Pawn);
@@ -137,6 +110,62 @@ void cheat_manager::cheat_thread()
 					Car->Health = 100.0f;
 				}
 			}
+
+			//if (MainGameMode->PropRenderer->IsA(SDK::APropProcessor_C::StaticClass())) {
+			//	static bool once = false;
+			//	SpawnMenu = MainGameMode->PropRenderer->Spawnmenu;
+			//	
+			//	if (cfg->spawnmenu && !once) {
+			//		SpawnMenu->Construct();
+			//		WidgetSpawnMenu = UWidgetBlueprintLibrary::Create(World, SDK::UUmg_spawnmenu_C::StaticClass(), MyController);
+			//		WidgetSpawnMenu->AddToViewport(NULL);
+			//		once = true;
+			//	}			
+			//}
+			//if (MainGameMode->PlayerInterface->IsA(SDK::UUmg_UI_C::StaticClass())) {
+			//	static bool once = false;
+			//	CheatMenu = MainGameMode->PlayerInterface->Umg_cheatMenu;
+			//	if (cfg->cheatmenu && !once) {
+			//		CheatMenu->Cheats;
+			//		//UWidgetBlueprintLibrary::Create(World, SDK::UUmg_cheatMenuSlot_C::StaticClass(), MyController);
+			//		//CheatMenu->Construct();
+			//		WidgetCheatMenu = UWidgetBlueprintLibrary::Create(World, SDK::UUmg_cheatMenu_C::StaticClass(), MyController);
+			//		WidgetCheatMenu->AddToViewport(NULL);
+			//		once = true;
+			//	}
+			//}
+
+			//static bool open, closed, open2, closed2 = false;
+
+			//if (cfg->menu_open && cfg->spawnmenu && !open)
+			//{
+			//		WidgetSpawnMenu->SetVisibility(ESlateVisibility(0));
+			//		
+			//		UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(MyController, WidgetSpawnMenu, EMouseLockMode(0));
+
+			//		open = true;
+			//}		
+			//else if ((!cfg->menu_open || !cfg->spawnmenu) && open)
+			//{
+			//	WidgetSpawnMenu->SetVisibility(ESlateVisibility(2));
+			//	UWidgetBlueprintLibrary::SetInputMode_GameOnly(MyController);
+			//	open = false;
+			//}
+			//
+			//if (cfg->menu_open && cfg->cheatmenu && !open2)
+			//{
+			//	WidgetCheatMenu->SetVisibility(ESlateVisibility(0));
+
+			//	UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(MyController, WidgetCheatMenu, EMouseLockMode(0));
+
+			//	open2 = true;
+			//}
+			//else if ((!cfg->menu_open || !cfg->cheatmenu) && open2)
+			//{
+			//	WidgetCheatMenu->SetVisibility(ESlateVisibility(2));
+			//	UWidgetBlueprintLibrary::SetInputMode_GameOnly(MyController);
+			//	open2 = false;
+			//}
 
 			exploits();
 
@@ -170,17 +199,10 @@ void cheat_manager::cheat_thread()
 
 		static bool stack = false;
 
-		if (cfg->menu_open && !stack) {
-			cfg->pause = stack = cfg->menu_open;
-		}
-		else if (!cfg->menu_open && stack)
-		{
-			cfg->pause = stack = cfg->menu_open;
-		}
-		if (!UGameplayStatics::IsGamePaused(World) && cfg->pause) {
+		if (cfg->menu_open) {
 			UGameplayStatics::SetGamePaused(World, true);
 		}
-		else if (UGameplayStatics::IsGamePaused(World) && !cfg->pause) {
+		else if (!cfg->menu_open) {
 			UGameplayStatics::SetGamePaused(World, false);
 		}
 
@@ -282,17 +304,10 @@ void cheat_manager::ESP() {
 void cheat_manager::exploits() {
 	static bool once2, once3, once4, once5, once6, once7, thrOnce1, thrOnce2, thrOnce3, once8 = false;
 
-	if (cfg->menu_open && !once5) {
-		cfg->pause = once5 = cfg->menu_open;
-	}
-	else if (!cfg->menu_open && once5)
-	{
-		cfg->pause = once5 = cfg->menu_open;
-	}
-	if (!UGameplayStatics::IsGamePaused(World) && cfg->pause) {
+	if (cfg->menu_open) {
 		UGameplayStatics::SetGamePaused(World, true);
 	}
-	else if (UGameplayStatics::IsGamePaused(World) && !cfg->pause) {
+	else if (!cfg->menu_open) {
 		UGameplayStatics::SetGamePaused(World, false);
 	}
 
@@ -479,15 +494,35 @@ void cheat_manager::tips() {
 	ImGui::End();
 }
 
-void cheat_manager::bypass() {
-	auto& screen = ImGui::GetIO();
-	ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiCond_Once);
-	ImGui::SetNextWindowPos(ImVec2(screen.DisplaySize.x * 0.5f, screen.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::StyleColorsDark();
-	ImGui::Begin("Bypass Restrictions", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);
+//void cheat_manager::bypass() {
 
-	ImGui::Checkbox("Parse functions", &cfg->parse_functions);
+	//	DWORD64** ProcessEvent = *(DWORD64***)(Engine->GameViewport) + Offsets::ProcessEventIdx;
+	//	OProcessEvent = (ProcessEventType)(*ProcessEvent);
 
+	//auto& screen = ImGui::GetIO();
+	//ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiCond_Once);
+	//ImGui::SetNextWindowPos(ImVec2(screen.DisplaySize.x * 0.5f, screen.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	//ImGui::StyleColorsDark();
+	//ImGui::Begin("Bypass Restrictions", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);
 
-	ImGui::End();
-}
+	//ImGui::Checkbox("Parse functions", &cfg->parse_functions);
+
+	//ImGui::End();
+
+		//Engine = SDK::UEngine::GetEngine();
+		//state = AMainGamemode_C::StaticClass()->GetFunction("mainGamemode_C", "CustomEvent");
+
+		//MH_CreateHook((LPVOID)state->ExecFunction, &CallFunc, reinterpret_cast<void**>(&OProcessEventOriginal));
+
+		//if (cfg->parse_functions) {
+		//	static bool once = false;
+		//	MH_EnableHook((DWORD_PTR*)state->ExecFunction);
+		//	//hookOnce = true;
+		//}
+		//if (!cfg->parse_functions) {
+		//	//myfile.close();
+		//	MH_DisableHook((DWORD_PTR*)state->ExecFunction);
+		//	//hookOnce = false;
+		//}
+
+//}

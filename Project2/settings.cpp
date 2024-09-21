@@ -5,7 +5,7 @@ void settings::initialize_settings()
 	this->menu_open = true;
 	this->teleport = false;
 	this->debug_console = true;
-	this->init_hooks = false;
+	this->init_hooks = true;
 	this->hulk = false;
 	this->lines = false;
 	this->names = false;
@@ -18,9 +18,8 @@ void settings::initialize_settings()
 	this->server = false;
 	this->time = false;
 	this->time_change = 0.05f;
-	this->pause = true;
 	this->list_objects = false;
-	this->parse_functions = false;
+	this->parse_functions = true;
 	this->draw_distance = false;
 	this->distance = 50.0f;
 	this->nodamage = false;
@@ -33,4 +32,6 @@ void settings::initialize_settings()
 	this->tips = true;
 	this->prop = false;
 	this->teleport = false;
+	this->spawnmenu = false;
+	this->cheatmenu = false;
 }

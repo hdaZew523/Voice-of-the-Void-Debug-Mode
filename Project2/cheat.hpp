@@ -34,8 +34,15 @@ private:
 	std::string ActorName;
 	FString CurrentWorldName;
 	FString PreviousWorldName;
+	UGameInst_C* Instance;
+	Enum_gamemode OrigInstance;
+	
+	//SDK::UFunction* state;
 
-	SDK::UFunction* state;
+	//SDK::UUmg_spawnmenu_C* SpawnMenu;
+	//SDK::UUmg_cheatMenu_C* CheatMenu;
+	//UUserWidget* WidgetSpawnMenu;
+	//UUserWidget* WidgetCheatMenu;
 
 	AActor* Bypass;
 

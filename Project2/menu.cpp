@@ -80,7 +80,7 @@ void menu_imgui::cheat_gui()
 	if (cfg->init_hooks) {
 		ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, NULL), ImGuiCond_Once);
 		ImGui::Begin("Ariral's debug mode", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse);
-		ImGui::SetWindowSize({ 400, 350 });		
+		ImGui::SetWindowSize({ 400, 400 });		
 		ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 		if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
 		{
@@ -96,7 +96,6 @@ void menu_imgui::cheat_gui()
 				ImGui::Checkbox("Auth", &cfg->init_hooks);
 				ImGui::Spacing();
 				ImGui::Spacing();
-				ImGui::Checkbox("Pause Game", &cfg->pause);
 				ImGui::Checkbox("Game Time", &cfg->game_time);
 				if (ImGui::IsItemHovered())
 					ImGui::SetTooltip("Additional window");
@@ -132,8 +131,11 @@ void menu_imgui::cheat_gui()
 					ImGui::SliderFloat("Time Scale", &cfg->time_change, 0.05, 100);
 				ImGui::Spacing();
 				ImGui::Spacing();
+				//ImGui::Checkbox("Spawn menu", &cfg->spawnmenu);
+				//ImGui::Checkbox("Cheat menu", &cfg->cheatmenu);
+				//ImGui::Spacing();
+				//ImGui::Spacing();
 
-				ImGui::SetCursorPosY(550 - 30);
 				ImGui::Checkbox("Tips", &cfg->tips);
 
 				ImGui::NextColumn();
