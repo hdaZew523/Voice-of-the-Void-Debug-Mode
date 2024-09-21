@@ -11,7 +11,7 @@ Bypass tutorial restrictions
 
 Full Spawn menu (probably), Cheat menu, and true noclip
 
-![alt text](img/4.png)
+![alt text](img/5.png)
 ## Features
 
 * Exploits
