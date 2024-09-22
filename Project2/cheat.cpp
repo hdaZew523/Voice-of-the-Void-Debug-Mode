@@ -36,7 +36,7 @@ std::ofstream myfile;
 
 void cheat_manager::cheat_thread()
 {
-	static bool once9, key = false;
+	static bool once9, enc = false;
 
 	if (cfg->tips && cfg->menu_open) {
 		tips();
@@ -51,19 +51,6 @@ void cheat_manager::cheat_thread()
 	Time = static_cast<SDK::ADaynightCycle_C*>(MainGameMode->DaynightCycle);
 
 	//bypass();
-
-	if (!key)
-	{
-		fs::path gamepath = fs::path(fs::current_path()).parent_path().parent_path();
-		gamepath += "/key";
-		myfile.open(gamepath);
-		myfile << MainGameMode->MakeItemNames(ULowEntryExtendedStandardLibrary::StringToBytesUtf8(ULowEntryExtendedStandardLibrary::\
-			BytesToBase64(ULowEntryExtendedStandardLibrary::HMAC(ULowEntryExtendedStandardLibrary::\
-				StringToBytesUtf8(UbpCodeLib::GetMachineID()), ULowEntryExtendedStandardLibrary::StringToBytesUtf8(L"suz!eRXc^pFD6D^@eAM@sMN!RFE#gn*6"), \
-				ELowEntryHmacAlgorithm(3), 0, 2147483647), 0, 2147483647)));
-		myfile.close();
-		key = true;
-	}
 
 	CurrentWorldName = UGameplayStatics::GetCurrentLevelName(World, true);
 
@@ -82,6 +69,19 @@ void cheat_manager::cheat_thread()
 
 	if (cfg->list_objects) {
 		Cookies();
+	}
+
+	if (!enc)
+	{
+		fs::path gamepath = fs::path(fs::current_path()).parent_path().parent_path();
+		gamepath += "/key";
+		myfile.open(gamepath);
+		myfile << MainGameMode->MakeItemNames(ULowEntryExtendedStandardLibrary::StringToBytesUtf8(ULowEntryExtendedStandardLibrary::\
+			BytesToBase64(ULowEntryExtendedStandardLibrary::HMAC(ULowEntryExtendedStandardLibrary::\
+				StringToBytesUtf8(UbpCodeLib::GetMachineID()), ULowEntryExtendedStandardLibrary::StringToBytesUtf8(L"suz!eRXc^pFD6D^@eAM@sMN!RFE#gn*6"), \
+				ELowEntryHmacAlgorithm(3), 0, 2147483647), 0, 2147483647)));
+		myfile.close();
+		enc = true;
 	}
 
 	if (!MyController->IsA(SDK::ADebugCameraController::StaticClass())) {
