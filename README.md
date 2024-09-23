@@ -62,5 +62,10 @@ You will need developer tools directly related to Unreal Engine and Voice of the
 3. Make sure Realese and x64 are selected
 4. Compile
 
+## Interesting projects
+
+* [DebugMod] - A very powerful debugging tool by `acitulen` in the form of a game modification
+
    [secret]: <https://raw.githubusercontent.com/Vyollet/Voice-of-the-Void-Debug-Mode/main/Project2/.secrets>
    [levels]: <https://votv-ru.fandom.com/ru/wiki/%D0%9C%D0%B8%D1%80%D1%8B_%D0%B8_%D1%82%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B5_%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B8>
+   [DebugMod]: <https://thunderstore.io/c/voices-of-the-void/p/acitulen/DebugMod/>
