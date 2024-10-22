@@ -22,7 +22,7 @@ Full Spawn menu (probably), Cheat menu, and true noclip
   | Toggledebugcamera | Toggles the player controller to the debug camera controller. |
   | Summon | Summon objects. Example: ```Summon prop_gravgun_c```. You can use [this list][secret] to look up object names. |
   | Show staticmeshes/BSP | Disables objects / walls. BSP only shows the result in tutorial level. |
-  | Open | Switches to an existing level. Example: ```Open tutorial3_1```. You can use [this list][secret]. |
+  | Open | Switches to an existing level. Example: ```Open tutorial3_1```. You can use [this list][levels]. |
   * Game Time (Additional window)
   * Fly
     * Disable Collision
