@@ -48,7 +48,7 @@ Full Spawn menu (probably), Cheat menu, and true noclip
 * Destroy Prop
 
 ## Using
-1. Download from realese (DLL and, if you don't have the injector, you will also need the exe file) / Compile project
+1. Download from release (DLL and, if you don't have the injector, you will also need the exe file) / Compile project
 2. Place the exe file together with the DLL in any convenient place.
 3. Start the game
 4. Start exe file (Don't need administrator privileges)
